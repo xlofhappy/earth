@@ -34,6 +34,8 @@
     let view = µ.view();
     let log = µ.log();
 
+    let MIN_SCALE = view.width / 6.2;
+
     /**
      * An object to display various types of messages to the user.
      */
@@ -127,6 +129,8 @@
             op = op || newOp(d3.mouse(this), zoom.scale());  // a new operation begins
         }).on("zoom", function () {
             let currentMouse = d3.mouse(this), currentScale = d3.event.scale;
+            currentScale = currentScale > MIN_SCALE ? currentScale : MIN_SCALE;
+            console.log("currentScale", currentMouse, currentScale);
             op = op || newOp(currentMouse, 1);  // Fix bug on some browsers where zoomstart fires out of order.
             if (op.type === "click" || op.type === "spurious") {
                 let distanceMoved = µ.distance(currentMouse, op.startMouse);
@@ -322,7 +326,7 @@
         }
 
         // Throttled draw method helps with slow devices that would get overwhelmed by too many redraw events.
-        let REDRAW_WAIT = 5;  // milliseconds
+        let REDRAW_WAIT = 10;  // milliseconds
         let doDraw_throttled = _.throttle(doDraw, REDRAW_WAIT, {leading: false});
 
         function doDraw() {
@@ -880,13 +884,13 @@
     function init() {
         report.status("Initializing...");
 
-        d3.select("#sponsor-link")
-            .attr("target", µ.isEmbeddedInIFrame() ? "_new" : null)
-            .on("click", reportSponsorClick.bind(null, "click"))
-            .on("contextmenu", reportSponsorClick.bind(null, "right-click"));
-        d3.select("#sponsor-hide").on("click", function () {
-            d3.select("#sponsor").classed("invisible", true);
-        });
+        // d3.select("#sponsor-link")
+        //     .attr("target", µ.isEmbeddedInIFrame() ? "_new" : null)
+        //     .on("click", reportSponsorClick.bind(null, "click"))
+        //     .on("contextmenu", reportSponsorClick.bind(null, "right-click"));
+        // d3.select("#sponsor-hide").on("click", function () {
+        //     d3.select("#sponsor").classed("invisible", true);
+        // });
 
         d3.selectAll(".fill-screen").attr("width", view.width).attr("height", view.height);
         // Adjust size of the scale canvas to fill the width of the menu to the right of the label.
@@ -930,10 +934,6 @@
             meshAgent.submit(buildMesh, attr);
         });
 
-        globeAgent.listenTo(configuration, "change:projection", function (source, attr) {
-            globeAgent.submit(buildGlobe, attr);
-        });
-
         gridAgent.listenTo(configuration, "change", function () {
             let changed = _.keys(configuration.changedAttributes()), rebuildRequired = false;
 
@@ -958,6 +958,7 @@
                 gridAgent.submit(buildGrids);
             }
         });
+
         gridAgent.on("submit", function () {
             showGridDetails(null);
         });
@@ -967,6 +968,11 @@
         d3.select("#toggle-zone").on("click", function () {
             d3.select("#data-date").classed("local", !d3.select("#data-date").classed("local"));
             showDate(gridAgent.cancel.requested ? null : gridAgent.value());
+        });
+
+        globeAgent.listenTo(configuration, "change:projection", function (source, attr) {
+            console.log("d", source, attr);
+            globeAgent.submit(buildGlobe, attr);
         });
 
         function startRendering() {

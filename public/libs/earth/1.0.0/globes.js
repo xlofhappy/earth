@@ -123,18 +123,18 @@ var globes = function () {
              * @param startScale starting scale.
              */
             manipulator: function (startMouse, startScale) {
-                var projection = this.projection;
-                var sensitivity = 60 / startScale;  // seems to provide a good drag scaling factor
-                var rotation = [projection.rotate()[0] / sensitivity, -projection.rotate()[1] / sensitivity];
-                var original = projection.precision();
+                let projection = this.projection;
+                let sensitivity = 60 / startScale;  // seems to provide a good drag scaling factor
+                let rotation = [projection.rotate()[0] / sensitivity, -projection.rotate()[1] / sensitivity];
+                let original = projection.precision();
                 projection.precision(original * 10);
 
-                var lastTranslate = projection.translate();
+                let lastTranslate = projection.translate();
                 return {
                     move: function (mouse, scale) {
                         if (mouse) {
-                            var xd = mouse[0] - startMouse[0] + lastTranslate[0];
-                            var yd = mouse[1] - startMouse[1] + lastTranslate[1];
+                            let xd = mouse[0] - startMouse[0] + lastTranslate[0];
+                            let yd = mouse[1] - startMouse[1] + lastTranslate[1];
                             projection.translate([xd, yd]);
                         }
                         projection.scale(scale);
@@ -301,6 +301,7 @@ var globes = function () {
                 return d3.geo.mercator()
                 // .rotate([-43, -20])
                     .precision(1.0);
+                // scale(view.scale);
                 // .clipAngle(180 - 0.0001)
                 // .clipExtent([[0, 0], [view.width, view.height]]);
             }
