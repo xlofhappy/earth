@@ -6,7 +6,7 @@
  *
  * https://github.com/cambecc/earth
  */
-var globes = function() {
+var globes = function () {
     "use strict";
 
     /**
@@ -52,7 +52,7 @@ var globes = function() {
              * @param view the size of the view as {width:, height:}.
              * @returns {Object} a new D3 projection of this globe appropriate for the specified view port.
              */
-            newProjection: function(view) {
+            newProjection: function (view) {
                 throw new Error("method must be overridden");
             },
 
@@ -61,7 +61,7 @@ var globes = function() {
              * @returns {{x: Number, y: Number, xMax: Number, yMax: Number, width: Number, height: Number}}
              *          the bounds of the current projection clamped to the specified view.
              */
-            bounds: function(view) {
+            bounds: function (view) {
                 return clampedBounds(d3.geo.path().projection(this.projection).bounds({type: "Sphere"}), view);
             },
 
@@ -69,7 +69,7 @@ var globes = function() {
              * @param view the size of the view as {width:, height:}.
              * @returns {Number} the projection scale at which the entire globe fits within the specified view.
              */
-            fit: function(view) {
+            fit: function (view) {
                 var defaultProjection = this.newProjection(view);
                 var bounds = d3.geo.path().projection(defaultProjection).bounds({type: "Sphere"});
                 var hScale = (bounds[1][0] - bounds[0][0]) / defaultProjection.scale();
@@ -81,14 +81,14 @@ var globes = function() {
              * @param view the size of the view as {width:, height:}.
              * @returns {Array} the projection transform at which the globe is centered within the specified view.
              */
-            center: function(view) {
+            center: function (view) {
                 return [view.width / 2, view.height / 2];
             },
 
             /**
              * @returns {Array} the range at which this globe can be zoomed.
              */
-            scaleExtent: function() {
+            scaleExtent: function () {
                 return [25, 3000];
             },
 
@@ -99,7 +99,7 @@ var globes = function() {
              * @param [o] the orientation string
              * @param [view] the size of the view as {width:, height:}.
              */
-            orientation: function(o, view) {
+            orientation: function (o, view) {
                 var projection = this.projection, rotate = projection.rotate();
                 if (µ.isValue(o)) {
                     var parts = o.split(","), λ = +parts[0], φ = +parts[1], scale = +parts[2];
@@ -122,22 +122,24 @@ var globes = function() {
              * @param startMouse starting mouse position.
              * @param startScale starting scale.
              */
-            manipulator: function(startMouse, startScale) {
+            manipulator: function (startMouse, startScale) {
                 var projection = this.projection;
                 var sensitivity = 60 / startScale;  // seems to provide a good drag scaling factor
                 var rotation = [projection.rotate()[0] / sensitivity, -projection.rotate()[1] / sensitivity];
                 var original = projection.precision();
                 projection.precision(original * 10);
+
+                var lastTranslate = projection.translate();
                 return {
-                    move: function(mouse, scale) {
+                    move: function (mouse, scale) {
                         if (mouse) {
-                            var xd = mouse[0] - startMouse[0] + rotation[0];
-                            var yd = mouse[1] - startMouse[1] + rotation[1];
-                            projection.rotate([xd * sensitivity, -yd * sensitivity, projection.rotate()[2]]);
+                            var xd = mouse[0] - startMouse[0] + lastTranslate[0];
+                            var yd = mouse[1] - startMouse[1] + lastTranslate[1];
+                            projection.translate([xd, yd]);
                         }
                         projection.scale(scale);
                     },
-                    end: function() {
+                    end: function () {
                         projection.precision(original);
                     }
                 };
@@ -146,7 +148,7 @@ var globes = function() {
             /**
              * @returns {Array} the transform to apply, if any, to orient this globe to the specified coordinates.
              */
-            locate: function(coord) {
+            locate: function (coord) {
                 return null;
             },
 
@@ -155,7 +157,7 @@ var globes = function() {
              * @param context a Canvas element's 2d context.
              * @returns the context
              */
-            defineMask: function(context) {
+            defineMask: function (context) {
                 d3.geo.path().projection(this.projection).context(context)({type: "Sphere"});
                 return context;
             },
@@ -165,7 +167,7 @@ var globes = function() {
              * @param mapSvg the primary map SVG container.
              * @param foregroundSvg the foreground SVG container.
              */
-            defineMap: function(mapSvg, foregroundSvg) {
+            defineMap: function (mapSvg, foregroundSvg) {
                 var path = d3.geo.path().projection(this.projection);
                 var defs = mapSvg.append("defs");
                 defs.append("path")
@@ -204,7 +206,7 @@ var globes = function() {
 
     function atlantis() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.mollweide().rotate([30, -45, 90]).precision(0.1);
             }
         });
@@ -212,7 +214,7 @@ var globes = function() {
 
     function azimuthalEquidistant() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.azimuthalEquidistant().precision(0.1).rotate([0, -90]).clipAngle(180 - 0.001);
             }
         });
@@ -220,10 +222,10 @@ var globes = function() {
 
     function conicEquidistant() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.conicEquidistant().rotate(currentPosition()).precision(0.1);
             },
-            center: function(view) {
+            center: function (view) {
                 return [view.width / 2, view.height / 2 + view.height * 0.065];
             }
         });
@@ -231,7 +233,7 @@ var globes = function() {
 
     function equirectangular() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.equirectangular().rotate(currentPosition()).precision(0.1);
             }
         });
@@ -239,10 +241,10 @@ var globes = function() {
 
     function orthographic() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.orthographic().rotate(currentPosition()).precision(0.1).clipAngle(90);
             },
-            defineMap: function(mapSvg, foregroundSvg) {
+            defineMap: function (mapSvg, foregroundSvg) {
                 var path = d3.geo.path().projection(this.projection);
                 var defs = mapSvg.append("defs");
                 var gradientFill = defs.append("radialGradient")
@@ -275,7 +277,7 @@ var globes = function() {
                     .attr("xlink:href", "#sphere")
                     .attr("class", "foreground-sphere");
             },
-            locate: function(coord) {
+            locate: function (coord) {
                 return [-coord[0], -coord[1], this.projection.rotate()[2]];
             }
         });
@@ -283,7 +285,7 @@ var globes = function() {
 
     function stereographic(view) {
         return newGlobe({
-            newProjection: function(view) {
+            newProjection: function (view) {
                 return d3.geo.stereographic()
                     .rotate([-43, -20])
                     .precision(1.0)
@@ -293,12 +295,24 @@ var globes = function() {
         }, view);
     }
 
+    function mercator(view) {
+        return newGlobe({
+            newProjection: function (view) {
+                return d3.geo.mercator()
+                // .rotate([-43, -20])
+                    .precision(1.0);
+                // .clipAngle(180 - 0.0001)
+                // .clipExtent([[0, 0], [view.width, view.height]]);
+            }
+        }, view);
+    }
+
     function waterman() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.polyhedron.waterman().rotate([20, 0]).precision(0.1);
             },
-            defineMap: function(mapSvg, foregroundSvg) {
+            defineMap: function (mapSvg, foregroundSvg) {
                 var path = d3.geo.path().projection(this.projection);
                 var defs = mapSvg.append("defs");
                 defs.append("path")
@@ -332,7 +346,7 @@ var globes = function() {
 
     function winkel3() {
         return newGlobe({
-            newProjection: function() {
+            newProjection: function () {
                 return d3.geo.winkel3().precision(0.1);
             }
         });
@@ -346,7 +360,8 @@ var globes = function() {
         orthographic: orthographic,
         stereographic: stereographic,
         waterman: waterman,
-        winkel3: winkel3
+        winkel3: winkel3,
+        mercator: mercator
     });
 
 }();
