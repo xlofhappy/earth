@@ -2,7 +2,7 @@
 <html itemscope itemtype="http://schema.org/Map" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
 <head>
     <meta charset="utf-8"/>
-    <title>earth :: an animated map of global wind and weather</title>
+    <title>3D地球气象可视化Demo</title>
     <meta itemprop="name"                                      content="earth"/>
     <meta itemprop="description"     name="description"        content="an animated map of global wind and weather"/>
     <meta itemprop="author"          name="author"             content="Cameron Beccario"/>
@@ -55,7 +55,9 @@
         </div>
 
         <p id="earth">
-            <span id="show-menu" class="text-button" title="menu">earth</span>
+            <span id="temp-temp" class="text-button" title="menu">&nbsp;&nbsp;温度&nbsp;&nbsp;</span>
+            <span id="temp-wind" class="text-button" title="menu">&nbsp;&nbsp;风&nbsp;&nbsp;</span>
+<!--            <span id="show-menu" class="text-button" title="menu">earth</span>-->
             <span id="progress" class="invisible"></span>
         </p>
 
@@ -147,10 +149,10 @@
     <script src="/libs/d3.geo/0.0.0/d3.geo.polyhedron.v0.min.js" charset="utf-8"></script>
     <script src="/libs/when/2.6.0/when.js" charset="utf-8"></script>
 
-    <script src="/libs/earth/1.0.0/micro.js" charset="utf-8"></script>
-    <script src="/libs/earth/1.0.0/globes.js" charset="utf-8"></script>
-    <script src="/libs/earth/1.0.0/products.js" charset="utf-8"></script>
-    <script src="/libs/earth/1.0.0/earth.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/micro.min.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/globes.min.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/products.min.js" charset="utf-8"></script>
+    <script src="/libs/earth/1.0.0/earth.min.js" charset="utf-8"></script>
 
 </body>
 </html>

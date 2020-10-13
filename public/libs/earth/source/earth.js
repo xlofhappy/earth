@@ -642,7 +642,7 @@
     function drawGridPoints(ctx, grid, globe) {
         if (!grid || !globe || !configuration.get("showGridPoints")) return;
 
-        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillStyle = "rgba(0, 0, 0, 1)";
         // Use the clipping behavior of a projection stream to quickly draw visible points.
         var stream = globe.projection.stream({
             point: function(x, y) {
@@ -927,6 +927,7 @@
         });
 
         globeAgent.listenTo(configuration, "change:projection", function(source, attr) {
+            console.log(attr)
             globeAgent.submit(buildGlobe, attr);
         });
 
@@ -1098,6 +1099,10 @@
         products.overlayTypes.forEach(function(type) {
             bindButtonToConfiguration("#overlay-" + type, {overlayType: type});
         });
+        // todo add temp
+        bindButtonToConfiguration("#temp-temp", {overlayType: 'temp'});
+        bindButtonToConfiguration("#temp-wind", {overlayType: 'wind'});
+
         bindButtonToConfiguration("#overlay-wind", {param: "wind", overlayType: "default"});
         bindButtonToConfiguration("#overlay-ocean-off", {overlayType: "off"});
         bindButtonToConfiguration("#overlay-currents", {overlayType: "default"});

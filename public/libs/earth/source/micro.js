@@ -6,7 +6,7 @@
  *
  * https://github.com/cambecc/earth
  */
-var µ = function() {
+window.µ = function() {
     "use strict";
 
     var τ = 2 * Math.PI;
@@ -287,7 +287,7 @@ var µ = function() {
             }
             var range = ranges[i];
             return interpolators[i](µ.proportion(point, range[0], range[1]), alpha);
-        };
+};
     }
 
     /**

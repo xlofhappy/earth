@@ -6,7 +6,7 @@
  *
  * https://github.com/cambecc/earth
  */
-var globes = function() {
+window.globes = function() {
     "use strict";
 
     /**

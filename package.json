@@ -12,6 +12,9 @@
         "type": "git",
         "url": "git://github.com/cambecc/earth.git"
     },
+    "scripts": {
+        "dev": "webpack && node dev-server.js 8080"
+    },
     "engine": "node >= 0.10.21",
     "dependencies": {
         "when": "2.6.0",
@@ -21,6 +24,8 @@
     },
     "devDependencies": {
         "grunt": "~0.4.1",
-        "grunt-contrib-jshint": "~0.7.1"
+        "grunt-contrib-jshint": "~0.7.1",
+        "webpack": "^5.0.0",
+        "webpack-cli": "^4.0.0"
     }
 }
